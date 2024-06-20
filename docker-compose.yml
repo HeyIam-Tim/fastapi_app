@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:15
+    container_name: db_app
+    command: -p 1221
+    expose:
+      - 1221
+    env_file:
+      - .env-prod
+
+  app:
+    image: timdockerrr/fastapi-app:mytag
+    # build:
+    #   context: .
+    env_file:
+      - .env-prod
+    container_name: fastapi_app
+    ports:
+      - 9999:8000
+    depends_on:
+      - db
+    command: ['/fastapi_app/docker/app.sh']
+
+  front:
+    image: timdockerrr/fastapi-front:mytag
+    # build:
+    #   context: /Users/timirlan/Documents/test_projects/dogs/front/
+    # env_file:
+      # - .env-prod
+    container_name: front_app
+    ports:
+      - 8888:3000
+    depends_on:
+      - db
+      - app
+    command: ['npm', 'start']
+    # command: ['/front_app/docker/front.sh']
